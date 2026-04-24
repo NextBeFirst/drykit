@@ -1,6 +1,6 @@
 {
   "name": "drykit",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "CLI tool that prevents AI from creating duplicate components in React projects",
   "type": "module",
   "bin": {
