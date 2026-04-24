@@ -46,6 +46,7 @@ export function findDuplicates(entries, dryRiskKeywords = []) {
 }
 
 export function findUnregistered(filePaths, registeredEntries) {
-  const registered = new Set(registeredEntries.map(e => e.path));
-  return filePaths.filter(f => !registered.has(f));
+  const normalize = p => p.replace(/\\/g, '/');
+  const registered = new Set(registeredEntries.map(e => normalize(e.path)));
+  return filePaths.filter(f => !registered.has(normalize(f)));
 }
