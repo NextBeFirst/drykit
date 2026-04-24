@@ -15,25 +15,16 @@ export function updateMarkerBlock(filePath, content) {
 }
 
 export function generateRegistryBlock(registry) {
-  const lines = [];
-  const kinds = [
-    { key: 'components', label: 'Components' },
-    { key: 'hooks', label: 'Hooks' },
-    { key: 'utils', label: 'Utils' },
-    { key: 'routes', label: 'Routes' },
-    { key: 'schemas', label: 'Schemas' },
-  ];
-  for (const { key, label } of kinds) {
-    const entries = registry[key] || [];
-    if (entries.length === 0) continue;
-    lines.push(`\n**${label}** (${entries.length})\n`);
-    for (const e of entries) {
-      const vars = e.variants?.length ? ` — variants: ${e.variants.join(', ')}` : '';
-      const status = e.status ? ` (${e.status})` : '';
-      lines.push(`- \`${e.name}\`${status} — \`${e.path}\`${vars}`);
-    }
-  }
-  return lines.join('\n');
+  const compCount = registry.components?.length || 0;
+  const hookCount = registry.hooks?.length || 0;
+  const utilCount = registry.utils?.length || 0;
+  const routeCount = registry.routes?.reduce((s, r) => s + (r.routes?.length || 0), 0) || 0;
+  const schemaCount = registry.schemas?.length || 0;
+  const ts = registry.generatedAt ? registry.generatedAt.slice(0, 10) : new Date().toISOString().slice(0, 10);
+
+  return `_Last scan: ${ts} — ${compCount} components, ${hookCount} hooks, ${utilCount} utils, ${routeCount} routes, ${schemaCount} schemas_
+
+**Read \`.drykit/fingerprint.md\` for the full inventory.**`;
 }
 
 export function appendSectionIfMissing(filePath, sectionHeader, content) {

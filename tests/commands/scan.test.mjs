@@ -74,7 +74,7 @@ describe('scan', () => {
   it('updates AGENTS.md registry block', async () => {
     await runScan({ root: TMP });
     const agents = fs.readFileSync(path.join(TMP, 'AGENTS.md'), 'utf8');
-    assert.ok(agents.includes('Modal'));
+    assert.ok(agents.includes('components'));
     assert.ok(!agents.includes('old'));
   });
 });
