@@ -1,28 +1,36 @@
 {
-  "name": "claudestarter",
+  "name": "drykit",
   "version": "0.1.0",
-  "private": true,
-  "description": "DRY workflow template for Claude Code — registry, hooks, and CLAUDE.md memory system.",
+  "description": "CLI tool that prevents AI from creating duplicate components in React projects",
   "type": "module",
+  "bin": {
+    "drykit": "./bin/drykit.mjs"
+  },
+  "files": [
+    "bin/",
+    "src/"
+  ],
   "scripts": {
-    "component:register": "node scripts/register-component.mjs",
-    "registry:check": "node scripts/check-duplicates.mjs --ci",
-    "registry:duplicates": "node scripts/check-duplicates.mjs",
-    "registry:find": "node scripts/register-component.mjs --find",
-    "docs:generate": "node scripts/generate-docs.mjs",
-    "prepare": "husky"
+    "test": "node --test tests/**/*.test.mjs",
+    "test:watch": "node --test --watch tests/**/*.test.mjs"
   },
-  "devDependencies": {
-    "husky": "^9.1.6"
-  },
-  "license": "MIT",
   "keywords": [
-    "claude-code",
-    "dry",
-    "component-registry",
-    "template",
-    "nextjs",
+    "cli",
     "react",
-    "typescript"
-  ]
+    "components",
+    "registry",
+    "dry",
+    "ai",
+    "claude-code",
+    "kiro",
+    "duplicate-detection"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "glob": "^11.0.0",
+    "prompts": "^2.4.2"
+  }
 }
