@@ -27,8 +27,9 @@ export function findDuplicates(entries, dryRiskKeywords = []) {
       const dist = levenshtein(a.toLowerCase(), b.toLowerCase());
       const maxLen = Math.max(a.length, b.length);
       const ratio = dist / maxLen;
-      const oneContainsOther = a.toLowerCase().includes(b.toLowerCase()) || b.toLowerCase().includes(a.toLowerCase());
       const bothDryRisk = containsDryRisk(a, dryRiskKeywords) && containsDryRisk(b, dryRiskKeywords);
+      const oneContainsOther = (a.toLowerCase().includes(b.toLowerCase()) || b.toLowerCase().includes(a.toLowerCase()))
+        && bothDryRisk;
       if (oneContainsOther || (ratio < 0.4 && bothDryRisk)) {
         const existing = entries[i].variants?.length ? entries[i] : entries[j];
         dupes.push({

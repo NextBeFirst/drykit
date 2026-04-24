@@ -10,7 +10,7 @@ export async function runDocs({ root = process.cwd() } = {}) {
   const reg = loadRegistry(regPath);
 
   // Generate COMPONENTS.md
-  const docsDir = path.join(root, path.dirname(config.docs));
+  const docsDir = path.join(root, config.docs);
   fs.mkdirSync(docsDir, { recursive: true });
   const componentsPath = path.join(docsDir, 'COMPONENTS.md');
 

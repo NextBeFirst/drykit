@@ -41,8 +41,12 @@ function nameFromFile(filePath) {
 }
 
 function nameFromExport(src) {
-  const m = src.match(/export\s+(?:default\s+)?(?:function|const|class)\s+(\w+)/);
-  return m ? m[1] : null;
+  // Prefer PascalCase function/class export (components are PascalCase)
+  const m = src.match(/export\s+(?:default\s+)?(?:function|class)\s+([A-Z]\w*)/);
+  if (m) return m[1];
+  // Fallback: any named export
+  const m2 = src.match(/export\s+(?:default\s+)?(?:function|const|class)\s+(\w+)/);
+  return m2 ? m2[1] : null;
 }
 
 export function extractComponent(filePath) {

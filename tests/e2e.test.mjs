@@ -54,7 +54,7 @@ describe('e2e', () => {
 
     // Docs
     execSync(`node "${BIN}" docs`, { cwd: TMP, encoding: 'utf8' });
-    assert.ok(fs.existsSync(path.join(TMP, 'docs', 'COMPONENTS.md')));
+    assert.ok(fs.existsSync(path.join(TMP, 'docs', 'components', 'COMPONENTS.md')));
 
     // Fingerprint files exist and have content
     const fp = fs.readFileSync(path.join(TMP, '.drykit', 'fingerprint.md'), 'utf8');
