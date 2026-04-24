@@ -1,73 +1,30 @@
-# claudestarter
+# drykit
 
-A drop-in, DRY development workflow for Claude Code. Prevents component
-duplication, keeps a live registry, and feeds Claude fresh project context
-through `CLAUDE.md`.
+CLI tool that prevents AI (Claude Code, Kiro) from creating duplicate components in React projects.
 
-Works with any JS/TS project — optimized for **React, Next.js, and TypeScript**,
-but the core scripts are stack-agnostic.
-
-## What you get
-
-- **`CLAUDE.md`** — a living spec Claude reads at the start of every session
-- **`src/registry.json`** — the source of truth for every component, hook, util
-- **`scripts/register-component.mjs`** — CLI to add a component to the registry
-- **`scripts/check-duplicates.mjs`** — flags near-duplicate components (fuzzy match)
-- **`scripts/generate-docs.mjs`** — rebuilds `docs/COMPONENTS.md` from the registry
-- **`.husky/pre-commit`** — blocks commits that introduce unregistered components
-- **`.claude/settings.json`** — hooks that nudge Claude to update the registry
-
-## Install into a new project
+## Quick Start
 
 ```bash
-npx degit YOUR_GH_USER/claudestarter my-project
-cd my-project
-npm install
-npx husky init
-npm run registry:check
+npx drykit init
+drykit scan
 ```
 
-## Install into an existing project
+## Commands
 
-```bash
-# from your project root
-npx degit YOUR_GH_USER/claudestarter#main . --force
-npm install --save-dev husky
-npx husky init
-```
+| Command | Description |
+|---------|-------------|
+| `drykit init` | Initialize drykit in current project |
+| `drykit scan` | Scan project, update registry + fingerprint |
+| `drykit add <Name>` | Scaffold/register a component |
+| `drykit check [--ci]` | Validate registry |
+| `drykit docs` | Generate COMPONENTS.md |
 
-Then open `CLAUDE.md` and fill in the `[NAZWA_PROJEKTU]`, `[TECH_STACK]`,
-`[CSS_FRAMEWORK]` placeholders at the top.
+## How It Works
 
-## Daily workflow
-
-```bash
-# before creating a new component, search the registry
-npm run registry:find Modal
-
-# after creating a component
-npm run component:register Modal src/components/Modal.tsx
-
-# scan for duplicates manually
-npm run registry:duplicates
-
-# regenerate docs
-npm run docs:generate
-```
-
-The pre-commit hook runs `registry:check` automatically — if you add a `.tsx`
-file under `src/components/` that isn't in `registry.json`, the commit is
-blocked with a message telling you which command to run.
-
-## Philosophy
-
-1. **One CLAUDE.md to rule them all.** Claude doesn't re-read the codebase on
-   every turn; it reads `CLAUDE.md`. Keep it current.
-2. **Registry is the source of truth.** If it's not in `registry.json`, it
-   doesn't exist. Period.
-3. **Variants, not new components.** `Modal variant="confirmation"` — never
-   `ConfirmModal`.
-4. **The hook enforces it.** Humans forget. Git hooks don't.
+1. **Registry** (`registry.json`) — source of truth for all components
+2. **Fingerprint** (`.drykit/`) — token-optimized AI memory files
+3. **AI Config** — rules in CLAUDE.md, AGENTS.md, .kiro/steering/
+4. **Pre-commit hook** — blocks unregistered/duplicate components
 
 ## License
 
