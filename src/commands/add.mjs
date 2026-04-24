@@ -19,12 +19,16 @@ export async function runAdd({ root = process.cwd(), name, filePath, force = fal
     const dupes = findDuplicates([...allEntries, fakeEntry], config.dryRisk);
     const relevant = dupes.filter(d => d.a === name || d.b === name);
     if (relevant.length > 0) {
+      console.warn(`\n⚠  STOP — similar components already exist:\n`);
       for (const d of relevant) {
         const other = d.a === name ? d.b : d.a;
-        console.warn(`⚠  Similar component exists: ${other}`);
-        console.warn(`   ${d.suggestion}`);
+        const existing = allEntries.find(e => e.name === other);
+        const variants = existing?.variants?.length ? ` [variants: ${existing.variants.join(', ')}]` : '';
+        console.warn(`   • ${other}${variants} → ${existing?.path || ''}`);
+        console.warn(`     ${d.suggestion}\n`);
       }
-      console.warn('   Use --force to add anyway.');
+      console.warn(`   To proceed anyway, explicitly confirm:`);
+      console.warn(`   drykit add ${name} --confirm-duplicate\n`);
       return;
     }
   }
@@ -64,7 +68,7 @@ export async function runAdd({ root = process.cwd(), name, filePath, force = fal
 }
 
 export default async function add(args) {
-  const force = args.includes('--force');
+  const force = args.includes('--force') || args.includes('--confirm-duplicate');
   const filtered = args.filter(a => !a.startsWith('--'));
   const name = filtered[0];
   const filePath = filtered[1];

@@ -13,7 +13,7 @@ if (command === '--version' || command === '-v') {
   process.exit(0);
 }
 
-const COMMANDS = ['init', 'scan', 'add', 'check', 'docs', 'eject'];
+const COMMANDS = ['init', 'scan', 'add', 'check', 'docs', 'eject', 'merge'];
 
 if (!command || command === '--help' || command === '-h') {
   console.log(`drykit v${pkg.version} — prevent AI from creating duplicate components
@@ -21,12 +21,13 @@ if (!command || command === '--help' || command === '-h') {
 Usage: drykit <command> [options]
 
 Commands:
-  init          Initialize drykit in current project
-  scan          Scan project and update registry + fingerprint
-  add <Name>    Add/register a component
-  check [--ci]  Validate registry (unregistered files, duplicates)
-  docs          Generate COMPONENTS.md from registry
-  eject         Remove all drykit files from project
+  init                    Initialize drykit in current project
+  scan                    Scan project and update registry + fingerprint
+  add <Name>              Add/register a component
+  check [--ci]            Validate registry (unregistered files, duplicates)
+  docs                    Generate COMPONENTS.md from registry
+  merge <A> <B> [C...]    Merge duplicate components into one
+  eject                   Remove all drykit files from project
 
 Options:
   --version     Show version
