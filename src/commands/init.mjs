@@ -20,25 +20,61 @@ function writeIfMissing(filePath, content) {
   return true;
 }
 
-async function promptUser() {
+function detectComponentsDir(root) {
+  const candidates = ['src/components', 'components', 'app/components', 'src/app/components'];
+  for (const dir of candidates) {
+    const abs = path.join(root, dir);
+    if (fs.existsSync(abs) && fs.readdirSync(abs).some(f => /\.(tsx|jsx|ts|js)$/.test(f))) {
+      return dir;
+    }
+  }
+  for (const dir of candidates) {
+    if (fs.existsSync(path.join(root, dir))) return dir;
+  }
+  return 'src/components';
+}
+
+function detectStack(root) {
+  const pkgPath = path.join(root, 'package.json');
+  if (!fs.existsSync(pkgPath)) return { stack: 'React 19', css: 'none', typescript: true };
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+
+  const parts = [];
+  if (deps['next']) parts.push(`Next.js ${deps['next'].replace(/[\^~]/, '').split('.')[0]}`);
+  else if (deps['react']) parts.push(`React ${deps['react'].replace(/[\^~]/, '').split('.')[0]}`);
+
+  let css = 'none';
+  if (deps['tailwindcss']) css = `Tailwind ${deps['tailwindcss'].replace(/[\^~]/, '').split('.')[0]}`;
+  else if (deps['@emotion/react']) css = 'Emotion';
+  else if (deps['styled-components']) css = 'styled-components';
+
+  const typescript = !!(deps['typescript'] || deps['@types/react']);
+
+  return { stack: parts.join(' + ') || 'React 19', css, typescript };
+}
+
+async function promptUser(root = process.cwd()) {
   const prompts = (await import('prompts')).default;
+  const detectedDir = detectComponentsDir(root);
+  const detected = detectStack(root);
   const response = await prompts([
-    { type: 'text', name: 'projectName', message: 'Project name:', initial: path.basename(process.cwd()) },
-    { type: 'text', name: 'stack', message: 'Stack (e.g. React 19, Next.js 15):', initial: 'React 19' },
-    { type: 'text', name: 'css', message: 'CSS framework (e.g. Tailwind 4, none):', initial: 'Tailwind 4' },
-    { type: 'confirm', name: 'typescript', message: 'TypeScript?', initial: true },
+    { type: 'text', name: 'projectName', message: 'Project name:', initial: path.basename(root) },
+    { type: 'text', name: 'stack', message: 'Stack (e.g. React 19, Next.js 15):', initial: detected.stack },
+    { type: 'text', name: 'css', message: 'CSS framework (e.g. Tailwind 4, none):', initial: detected.css },
+    { type: 'confirm', name: 'typescript', message: 'TypeScript?', initial: detected.typescript },
     { type: 'select', name: 'ai', message: 'AI tools:', choices: [
       { title: 'Both (Claude Code + Kiro)', value: 'both' },
       { title: 'Claude Code only', value: 'claude' },
       { title: 'Kiro only', value: 'kiro' },
     ]},
-    { type: 'text', name: 'componentsDir', message: 'Components directory:', initial: 'src/components' },
+    { type: 'text', name: 'componentsDir', message: `Components directory (detected: ${detectedDir}):`, initial: detectedDir },
   ]);
   return response;
 }
 
 export async function runInit({ root = process.cwd(), answers = null } = {}) {
-  const a = answers || await promptUser();
+  const a = answers || await promptUser(root);
   const { projectName, stack, css, typescript, ai, componentsDir } = a;
 
   const useClaude = ai === 'both' || ai === 'claude';
