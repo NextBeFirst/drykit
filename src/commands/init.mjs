@@ -22,8 +22,8 @@ function writeIfMissing(filePath, content) {
 
 function detectProjectStructure(root) {
   const compCandidates = ['src/components', 'components', 'app/components', 'src/app/components'];
-  const hookCandidates = ['src/hooks', 'hooks', 'app/hooks'];
-  const utilCandidates = ['src/utils', 'utils', 'lib', 'src/lib'];
+  const hookCandidates = ['src/hooks', 'hooks', 'lib/hooks', 'app/hooks'];
+  const utilCandidates = ['src/utils', 'utils', 'lib/utils', 'lib', 'src/lib'];
   const routeCandidates = ['src/routes', 'src/app/api', 'app/api', 'pages/api'];
   const schemaCandidates = ['src/schemas', 'src/types', 'types', 'src/models'];
 
@@ -90,8 +90,10 @@ export async function runInit({ root = process.cwd(), answers = null } = {}) {
   const useClaude = ai === 'both' || ai === 'claude';
   const useKiro = ai === 'both' || ai === 'kiro';
 
-  // drykit.config.mjs
-  writeIfMissing(path.join(root, 'drykit.config.mjs'), configTemplate({
+  // drykit.config.mjs — always overwrite so paths stay in sync with project structure
+  const configPath = path.join(root, 'drykit.config.mjs');
+  mkdirp(path.dirname(configPath));
+  fs.writeFileSync(configPath, configTemplate({
     componentsDir,
     hooksDir,
     utilsDir,
