@@ -20,18 +20,27 @@ function writeIfMissing(filePath, content) {
   return true;
 }
 
-function detectComponentsDir(root) {
-  const candidates = ['src/components', 'components', 'app/components', 'src/app/components'];
-  for (const dir of candidates) {
-    const abs = path.join(root, dir);
-    if (fs.existsSync(abs) && fs.readdirSync(abs).some(f => /\.(tsx|jsx|ts|js)$/.test(f))) {
-      return dir;
+function detectProjectStructure(root) {
+  const compCandidates = ['src/components', 'components', 'app/components', 'src/app/components'];
+  const hookCandidates = ['src/hooks', 'hooks', 'app/hooks'];
+  const utilCandidates = ['src/utils', 'utils', 'lib', 'src/lib'];
+  const routeCandidates = ['src/routes', 'src/app/api', 'app/api', 'pages/api'];
+  const schemaCandidates = ['src/schemas', 'src/types', 'types', 'src/models'];
+
+  function findDir(candidates) {
+    for (const dir of candidates) {
+      if (fs.existsSync(path.join(root, dir))) return dir;
     }
+    return null;
   }
-  for (const dir of candidates) {
-    if (fs.existsSync(path.join(root, dir))) return dir;
-  }
-  return 'src/components';
+
+  const componentsDir = findDir(compCandidates) || 'src/components';
+  const hooksDir = findDir(hookCandidates) || 'src/hooks';
+  const utilsDir = findDir(utilCandidates) || 'src/utils';
+  const routesDir = findDir(routeCandidates);
+  const schemasDir = findDir(schemaCandidates);
+
+  return { componentsDir, hooksDir, utilsDir, routesDir, schemasDir };
 }
 
 function detectStack(root) {
@@ -56,32 +65,41 @@ function detectStack(root) {
 
 async function promptUser(root = process.cwd()) {
   const prompts = (await import('prompts')).default;
-  const detectedDir = detectComponentsDir(root);
+  const dirs = detectProjectStructure(root);
   const detected = detectStack(root);
   const response = await prompts([
     { type: 'text', name: 'projectName', message: 'Project name:', initial: path.basename(root) },
-    { type: 'text', name: 'stack', message: 'Stack (e.g. React 19, Next.js 15):', initial: detected.stack },
-    { type: 'text', name: 'css', message: 'CSS framework (e.g. Tailwind 4, none):', initial: detected.css },
+    { type: 'text', name: 'stack', message: 'Stack:', initial: detected.stack },
+    { type: 'text', name: 'css', message: 'CSS framework:', initial: detected.css },
     { type: 'confirm', name: 'typescript', message: 'TypeScript?', initial: detected.typescript },
     { type: 'select', name: 'ai', message: 'AI tools:', choices: [
       { title: 'Both (Claude Code + Kiro)', value: 'both' },
       { title: 'Claude Code only', value: 'claude' },
       { title: 'Kiro only', value: 'kiro' },
     ]},
-    { type: 'text', name: 'componentsDir', message: `Components directory (detected: ${detectedDir}):`, initial: detectedDir },
   ]);
-  return response;
+  return { ...response, dirs };
 }
 
 export async function runInit({ root = process.cwd(), answers = null } = {}) {
   const a = answers || await promptUser(root);
-  const { projectName, stack, css, typescript, ai, componentsDir } = a;
+  const { projectName, stack, css, typescript, ai } = a;
+  const dirs = a.dirs || detectProjectStructure(root);
+  const { componentsDir, hooksDir, utilsDir, routesDir, schemasDir } = dirs;
 
   const useClaude = ai === 'both' || ai === 'claude';
   const useKiro = ai === 'both' || ai === 'kiro';
 
   // drykit.config.mjs
-  writeIfMissing(path.join(root, 'drykit.config.mjs'), configTemplate({ componentsDir, projectName, stack: `${stack}${css !== 'none' ? ' + ' + css : ''}` }));
+  writeIfMissing(path.join(root, 'drykit.config.mjs'), configTemplate({
+    componentsDir,
+    hooksDir,
+    utilsDir,
+    routesDir,
+    schemasDir,
+    projectName,
+    stack: `${stack}${css !== 'none' ? ' + ' + css : ''}`,
+  }));
 
   // registry.json + schema
   const regDir = path.join(root, 'src');

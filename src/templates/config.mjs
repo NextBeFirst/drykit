@@ -1,4 +1,10 @@
-export function configTemplate({ componentsDir = 'src/components', hooksDir = 'src/hooks', utilsDir = 'src/utils', projectName = '', stack = '' }) {
+export function configTemplate({ componentsDir = 'src/components', hooksDir = 'src/hooks', utilsDir = 'src/utils', routesDir = null, schemasDir = null, projectName = '', stack = '' }) {
+  const routes = routesDir
+    ? `['${routesDir}/**/*.ts', 'src/app/api/**/*.ts']`
+    : `['src/routes/**/*.ts', 'src/app/api/**/*.ts']`;
+  const schemas = schemasDir
+    ? `['${schemasDir}/**/*.ts']`
+    : `['src/schemas/**/*.ts', 'src/types/**/*.ts']`;
   return `// drykit.config.mjs
 export default {
   projectName: '${projectName}',
@@ -7,8 +13,8 @@ export default {
     components: ['${componentsDir}/**/*.tsx', '${componentsDir}/**/*.jsx'],
     hooks: ['${hooksDir}/**/*.ts', '${hooksDir}/**/*.tsx'],
     utils: ['${utilsDir}/**/*.ts'],
-    routes: ['src/routes/**/*.ts', 'src/app/api/**/*.ts'],
-    schemas: ['src/schemas/**/*.ts', 'src/types/**/*.ts'],
+    routes: ${routes},
+    schemas: ${schemas},
   },
   registry: 'src/registry.json',
   docs: 'docs/components',
