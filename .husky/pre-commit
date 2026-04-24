@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+# claudestarter pre-commit
+# Blocks the commit when src/components|hooks|utils contain files that are not
+# listed in src/registry.json, and warns on near-duplicate component names.
+#
+# Skip with: git commit --no-verify   (not recommended)
+
+set -e
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR -- 'src/components/**' 'src/hooks/**' 'src/utils/**' || true)
+
+if [ -z "$STAGED" ]; then
+  exit 0
+fi
+
+echo "ℹ️  claudestarter: src/ changes detected — running registry check"
+node scripts/check-duplicates.mjs --ci

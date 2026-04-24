@@ -1,0 +1,49 @@
+{
+  "$schema": "./registry.schema.json",
+  "version": "1",
+  "generatedAt": "2026-04-24T15:48:45.036Z",
+  "components": [
+    {
+      "name": "Modal",
+      "path": "src/components/Modal.tsx",
+      "variants": [
+        "primary",
+        "confirmation",
+        "form"
+      ],
+      "props": {
+        "open": "boolean",
+        "variant": "'primary' | 'confirmation' | 'form'",
+        "title": "string",
+        "onClose": "() => void",
+        "children": "React.ReactNode"
+      },
+      "usage": "import { Modal } from '@/components/Modal';",
+      "dependencies": [
+        "react"
+      ],
+      "dateCreated": "2026-04-24",
+      "lastModified": "2026-04-24",
+      "status": "beta"
+    },
+    {
+      "name": "ConfirmModal",
+      "path": "src/components/ConfirmModal.tsx",
+      "variants": [],
+      "props": {
+        "open": "boolean",
+        "onConfirm": "() => void",
+        "onCancel": "() => void"
+      },
+      "usage": "import { ConfirmModal } from '@/components/ConfirmModal';",
+      "dependencies": [
+        "react"
+      ],
+      "dateCreated": "2026-04-24",
+      "lastModified": "2026-04-24",
+      "status": "beta"
+    }
+  ],
+  "hooks": [],
+  "utils": []
+}

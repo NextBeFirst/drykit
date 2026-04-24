@@ -1,0 +1,28 @@
+{
+  "name": "claudestarter",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DRY workflow template for Claude Code — registry, hooks, and CLAUDE.md memory system.",
+  "type": "module",
+  "scripts": {
+    "component:register": "node scripts/register-component.mjs",
+    "registry:check": "node scripts/check-duplicates.mjs --ci",
+    "registry:duplicates": "node scripts/check-duplicates.mjs",
+    "registry:find": "node scripts/register-component.mjs --find",
+    "docs:generate": "node scripts/generate-docs.mjs",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.6"
+  },
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "dry",
+    "component-registry",
+    "template",
+    "nextjs",
+    "react",
+    "typescript"
+  ]
+}

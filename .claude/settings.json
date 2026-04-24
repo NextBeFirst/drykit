@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "description": "claudestarter workflow - registry-backed DRY component development.",
+  "contextFiles": [
+    "CLAUDE.md",
+    "src/registry.json"
+  ],
+  "conventions": {
+    "componentsDir": "src/components",
+    "hooksDir": "src/hooks",
+    "utilsDir": "src/utils",
+    "docsDir": "src/docs",
+    "registry": "src/registry.json"
+  },
+  "rules": [
+    "Read src/registry.json before proposing a new component, hook, or util.",
+    "Prefer extending an existing component with a new variant over creating a new file.",
+    "Never suggest a filename like Foo2.tsx, FooNew.tsx, or ConfirmModal when Modal exists.",
+    "After you create or modify a component, remind the user to run: npm run component:register <Name> <path>",
+    "Keep the <!-- REGISTRY:START --> block in CLAUDE.md in sync by calling: npm run docs:generate"
+  ],
+  "commands": {
+    "register": "npm run component:register",
+    "find": "npm run registry:find",
+    "check": "npm run registry:check",
+    "docs": "npm run docs:generate"
+  }
+}
