@@ -1,6 +1,6 @@
 {
   "name": "drykit",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A linter for AI behavior — catches duplicates, unregistered components, and hardcoded secrets in React projects",
   "type": "module",
   "bin": {
