@@ -17,14 +17,14 @@ Nobody catches it. It ships. Now you have two.
 Multiply by every dev, every session, every week.
 
 **Tweet 3**
-Cal.com: [X] components scanned, [Y] potential duplicates, [Z] unregistered files.
+Cal.com: 142 components scanned, 24 potential duplicates, 32 with inconsistent prop signatures.
 
 The AI didn't create all of these. But it made them harder to find — and easier to duplicate.
 
 (link to report gist)
 
 **Tweet 4**
-Plane: [X] components, [Y] duplicates.
+Plane: 190 components, 42 duplicates. 1 hardcoded secret. 37 components with inconsistent prop signatures.
 
 Same pattern. Different repo. The component directory grows, nobody prunes it, and the AI keeps adding to the pile because it doesn't know what's already there.
 
