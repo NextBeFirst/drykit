@@ -49,6 +49,67 @@ function nameFromExport(src) {
   return m2 ? m2[1] : null;
 }
 
+export function findImportsOf(name, fileContents) {
+  const results = [];
+  const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const patterns = [
+    new RegExp(`import\\s+\\{[^}]*\\b${escapedName}\\b[^}]*\\}\\s+from`, 'm'),
+    new RegExp(`import\\s+${escapedName}\\s+from`, 'm'),
+    new RegExp(`require\\([^)]*\\b${escapedName}\\b`, 'm'),
+    new RegExp(`export\\s+\\{[^}]*\\b${escapedName}\\b[^}]*\\}\\s+from`, 'm'),
+  ];
+
+  for (const file of fileContents) {
+    if (file.path.includes('node_modules')) continue;
+    const lines = file.content.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (patterns.some(p => p.test(line))) {
+        results.push({ file: file.path, line: i + 1 });
+        break;
+      }
+    }
+  }
+  return results;
+}
+
+export function extractCallSiteProps(name, fileContents) {
+  const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const jsxRe = new RegExp(`<${escapedName}(?:\\s|>|/>)`, 'm');
+  const propRe = new RegExp(`<${escapedName}\\s+([^>]*?)\\s*/?>`, 'gs');
+  const propKeyRe = /(\w+)\s*=/g;
+
+  const signatureMap = new Map();
+  let totalUsages = 0;
+
+  for (const file of fileContents) {
+    if (!jsxRe.test(file.content)) continue;
+    let m;
+    while ((m = propRe.exec(file.content))) {
+      totalUsages++;
+      const propsStr = m[1];
+      const keys = [];
+      let km;
+      while ((km = propKeyRe.exec(propsStr))) keys.push(km[1]);
+      propKeyRe.lastIndex = 0;
+      keys.sort();
+      const sig = keys.join(',');
+      signatureMap.set(sig, (signatureMap.get(sig) || 0) + 1);
+    }
+    propRe.lastIndex = 0;
+  }
+
+  const topPatterns = [...signatureMap.entries()]
+    .map(([sig, count]) => ({ props: sig ? sig.split(',') : [], count }))
+    .sort((a, b) => b.count - a.count);
+
+  return {
+    uniqueCombinations: signatureMap.size,
+    totalUsages,
+    topPatterns,
+  };
+}
+
 export function extractComponent(filePath) {
   const src = fs.readFileSync(filePath, 'utf8');
   const name = nameFromExport(src) || nameFromFile(filePath);

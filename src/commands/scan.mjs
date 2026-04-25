@@ -3,7 +3,7 @@ import path from 'node:path';
 import { glob } from 'glob';
 import { loadConfig } from '../core/config.mjs';
 import { loadRegistry, saveRegistry, upsertEntry } from '../core/registry.mjs';
-import { extractComponent, extractHook, extractRoute, extractSchema } from '../core/extractor.mjs';
+import { extractComponent, extractHook, extractRoute, extractSchema, findImportsOf, extractCallSiteProps } from '../core/extractor.mjs';
 import { generateFingerprint, generateFrontMd, generateApiMd } from '../core/fingerprint.mjs';
 import { getRecentCommits, mapCommitsToRegistry } from '../core/changelog.mjs';
 import { updateMarkerBlock, generateRegistryBlock, updateSteeringFrontMd } from '../core/updater.mjs';
@@ -69,6 +69,38 @@ export async function runScan({ root = process.cwd() } = {}) {
   saveRegistry(regPath, reg);
   const total = reg.components.length + reg.hooks.length + reg.utils.length;
   console.log(`✓ Registry: ${total} entries (${reg.components.length} components, ${reg.hooks.length} hooks, ${reg.utils.length} utils)`);
+
+  // Import tracking — find where each entry is used
+  const allScanPatterns = [
+    ...config.scan.components,
+    ...(config.scan.hooks || []),
+    ...(config.scan.utils || []),
+    ...(config.scan.routes || []),
+    ...(config.scan.schemas || []),
+  ];
+  const allProjectFiles = await glob(['**/*.{ts,tsx,js,jsx}'], {
+    cwd: root,
+    ignore: ['node_modules/**', '.drykit/**', '*.test.*', '*.spec.*'],
+  });
+  const fileContents = allProjectFiles.map(f => {
+    try {
+      return { path: f.replace(/\\/g, '/'), content: fs.readFileSync(path.join(root, f), 'utf8') };
+    } catch { return null; }
+  }).filter(Boolean);
+
+  const allEntries = [...reg.components, ...reg.hooks, ...reg.utils];
+  for (const entry of allEntries) {
+    entry.usedIn = findImportsOf(entry.name, fileContents);
+    entry.callSignatures = extractCallSiteProps(entry.name, fileContents);
+  }
+  saveRegistry(regPath, reg);
+
+  const usedCount = allEntries.filter(e => e.usedIn && e.usedIn.length > 0).length;
+  const inconsistent = allEntries.filter(e => e.callSignatures && e.callSignatures.uniqueCombinations >= 3).length;
+  console.log(`✓ Import tracking: ${usedCount}/${allEntries.length} entries have usages`);
+  if (inconsistent > 0) {
+    console.log(`⚠ ${inconsistent} component(s) with 3+ unique prop signatures — check consistency`);
+  }
 
   // Changelog
   const allPaths = [
