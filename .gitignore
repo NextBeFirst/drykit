@@ -2,3 +2,14 @@ node_modules/
 *.tgz
 .DS_Store
 tests/**/__tmp_*/
+
+# Internal / dev-only
+docs/superpowers/
+docs_ignore/
+docs/launch/
+docs/doctrine.md
+reports/
+scripts/generate-report.sh
+scripts/generate-all-reports.sh
+.claude/
+.worktrees/
