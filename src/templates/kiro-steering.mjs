@@ -23,6 +23,14 @@ If it shows **0 components** or the file doesn't exist:
 - If a component exists with variants — use a variant, don't create new
 - If you must create new — run: drykit add <Name>
 - After creating — verify registry.json was updated
+
+## Behavioral Guardrails
+- Do NOT build, commit, or push without explicit user command
+- Do NOT edit files outside the current task scope
+- Do NOT add dependencies without asking first
+- Check TypeScript types before reporting task as done
+- One session = one goal. When done, say "done" and wait
+- NEVER hardcode API keys, tokens, or passwords — use .env.local
 `;
 }
 

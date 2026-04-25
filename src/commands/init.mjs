@@ -8,6 +8,9 @@ import { claudeMdDrykitSection } from '../templates/claude-md.mjs';
 import { kiroSteeringAlways, kiroSteeringFront } from '../templates/kiro-steering.mjs';
 import { kiroScannerAgent, kiroArchitectAgent } from '../templates/kiro-agents.mjs';
 import { claudeScannerAgent, claudeArchitectAgent } from '../templates/claude-agents.mjs';
+import { claudeSkillTemplate } from '../templates/claude-skill.mjs';
+import { cursorrulesTemplate } from '../templates/cursorrules.mjs';
+import { preToolUseHookTemplate } from '../templates/pretooluse-hook.mjs';
 import { preCommitTemplate } from '../templates/pre-commit.mjs';
 import { appendSectionIfMissing } from '../core/updater.mjs';
 
@@ -148,6 +151,21 @@ export async function runInit({ root = process.cwd(), answers = null } = {}) {
     mkdirp(claudeAgentsDir);
     writeIfMissing(path.join(claudeAgentsDir, 'drykit-scanner.md'), claudeScannerAgent());
     writeIfMissing(path.join(claudeAgentsDir, 'drykit-architect.md'), claudeArchitectAgent());
+
+    // .claude/skills/drykit/
+    const skillDir = path.join(root, '.claude', 'skills', 'drykit');
+    mkdirp(skillDir);
+    writeIfMissing(path.join(skillDir, 'SKILL.md'), claudeSkillTemplate({ projectName }));
+  }
+
+  // .cursorrules (cross-agent — always generate)
+  writeIfMissing(path.join(root, '.cursorrules'), cursorrulesTemplate({ projectName }));
+
+  // .claude/hooks/ PreToolUse hook
+  if (useClaude) {
+    const hooksDir = path.join(root, '.claude', 'hooks');
+    mkdirp(hooksDir);
+    writeIfMissing(path.join(hooksDir, 'drykit-pretooluse.mjs'), preToolUseHookTemplate());
   }
 
   // .husky/pre-commit

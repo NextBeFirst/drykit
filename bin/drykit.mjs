@@ -13,7 +13,7 @@ if (command === '--version' || command === '-v') {
   process.exit(0);
 }
 
-const COMMANDS = ['init', 'scan', 'add', 'check', 'docs', 'eject', 'merge'];
+const COMMANDS = ['init', 'scan', 'add', 'check', 'docs', 'eject', 'merge', 'stats', 'health'];
 
 if (!command || command === '--help' || command === '-h') {
   console.log(`drykit v${pkg.version} — prevent AI from creating duplicate components
@@ -27,6 +27,8 @@ Commands:
   check [--ci]            Validate registry (unregistered files, duplicates)
   docs                    Generate COMPONENTS.md from registry
   merge <A> <B> [C...]    Merge duplicate components into one
+  stats                   Show cumulative token savings
+  health                  Check project health (large files, missing docs)
   eject                   Remove all drykit files from project
 
 Options:

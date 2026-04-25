@@ -1,7 +1,7 @@
 {
   "name": "drykit",
-  "version": "0.1.7",
-  "description": "CLI tool that prevents AI from creating duplicate components in React projects",
+  "version": "0.2.0",
+  "description": "A linter for AI behavior — catches duplicates, unregistered components, and hardcoded secrets in React projects",
   "type": "module",
   "bin": {
     "drykit": "./bin/drykit.mjs"
