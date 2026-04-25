@@ -120,10 +120,16 @@ export async function runCheck({ root = process.cwd(), ci = false, json = false,
           : '—',
       }));
 
-    const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8').toString());
+    let drykitVersion = '0.0.0';
+    try {
+      const drykitPkgPath = new URL('../../package.json', import.meta.url);
+      const drykitPkg = JSON.parse(fs.readFileSync(drykitPkgPath, 'utf8'));
+      drykitVersion = drykitPkg.version || '0.0.0';
+    } catch { /* fallback */ }
+
     const md = generateReport({
       projectName: config.projectName || path.basename(root),
-      version: pkg.dependencies?.drykit?.replace(/[\^~]/, '') || pkg.version || '0.0.0',
+      version: drykitVersion,
       registry: counts,
       issues: buildIssues({ unregistered, dupes, secrets, root }),
       summary: {

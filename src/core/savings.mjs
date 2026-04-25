@@ -61,10 +61,12 @@ export function getDelta(savings, days = 7) {
   cutoff.setDate(cutoff.getDate() - days);
   const cutoffStr = cutoff.toISOString().slice(0, 10);
 
-  let baseline = savings.history[0];
+  let baseline = null;
   for (const entry of savings.history) {
     if (entry.date <= cutoffStr) baseline = entry;
   }
+
+  if (!baseline) return null;
 
   return {
     duplicates: savings.totalDuplicatesBlocked - (baseline.totalDuplicates || 0),

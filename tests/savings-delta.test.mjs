@@ -54,7 +54,7 @@ describe('delta tracking', () => {
     assert.equal(delta.unregistered, 5 - 2);
   });
 
-  it('getDelta compares against oldest entry if history shorter than N days', () => {
+  it('getDelta returns null if all history is within the window', () => {
     const savings = {
       totalDuplicatesBlocked: 5,
       totalSecretsBlocked: 1,
@@ -65,7 +65,7 @@ describe('delta tracking', () => {
       ],
     };
     const delta = getDelta(savings, 7);
-    assert.equal(delta.duplicates, 5 - 2);
+    assert.equal(delta, null);
   });
 });
 
