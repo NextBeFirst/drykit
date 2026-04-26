@@ -18,6 +18,8 @@ export function generateReport({ projectName, version, registry, issues, summary
 
   const totalIssues = summary.duplicates + summary.secrets + summary.unregistered;
   const tokensEst = (summary.duplicates + summary.secrets) * 700;
+  const timeSavedMin = summary.duplicates * 30 + summary.secrets * 45 + (inconsistent ? inconsistent.length * 15 : 0);
+  const timeSavedHrs = (timeSavedMin / 60).toFixed(1);
 
   lines.push('## Summary');
   lines.push(`- **Components:** ${registry.components} registered`);
@@ -29,6 +31,9 @@ export function generateReport({ projectName, version, registry, issues, summary
   }
   if (tokensEst > 0) {
     lines.push(`- **Estimated tokens saved:** ~${(tokensEst / 1000).toFixed(1)}k (estimate)`);
+  }
+  if (timeSavedMin > 0) {
+    lines.push(`- **Estimated time saved:** ~${timeSavedHrs}h (estimate — based on ~30min per duplicate, ~45min per secret, ~15min per inconsistent component)`);
   }
   lines.push('');
 
