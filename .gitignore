@@ -3,13 +3,13 @@ node_modules/
 .DS_Store
 tests/**/__tmp_*/
 
-# Internal / dev-only
+# Internal / dev-only — all local files in one place
+_local/
 docs/superpowers/
 docs_ignore/
 docs/launch/
 docs/doctrine.md
 docs/npmjs_desc.md
-docs_ignore/
 reports/
 scripts/generate-report.sh
 scripts/generate-all-reports.sh
