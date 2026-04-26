@@ -13,8 +13,10 @@ export async function runScan({ root = process.cwd() } = {}) {
   const regPath = path.join(root, config.registry);
   const reg = loadRegistry(regPath);
 
+  const defaultIgnore = ['**/*.test.*', '**/*.spec.*', '**/__mocks__/**', '**/*.stories.*', '**/node_modules/**'];
+
   // Scan components
-  const compFiles = await glob(config.scan.components, { cwd: root });
+  const compFiles = await glob(config.scan.components, { cwd: root, ignore: defaultIgnore });
   for (const f of compFiles) {
     try {
       const data = extractComponent(path.join(root, f));
@@ -24,7 +26,7 @@ export async function runScan({ root = process.cwd() } = {}) {
   }
 
   // Scan hooks
-  const hookFiles = await glob(config.scan.hooks || [], { cwd: root });
+  const hookFiles = await glob(config.scan.hooks || [], { cwd: root, ignore: defaultIgnore });
   for (const f of hookFiles) {
     try {
       const data = extractHook(path.join(root, f));
@@ -34,7 +36,7 @@ export async function runScan({ root = process.cwd() } = {}) {
   }
 
   // Scan utils
-  const utilFiles = await glob(config.scan.utils || [], { cwd: root });
+  const utilFiles = await glob(config.scan.utils || [], { cwd: root, ignore: defaultIgnore });
   for (const f of utilFiles) {
     try {
       const data = extractHook(path.join(root, f));
@@ -44,7 +46,7 @@ export async function runScan({ root = process.cwd() } = {}) {
   }
 
   // Scan routes
-  const routeFiles = await glob(config.scan.routes || [], { cwd: root });
+  const routeFiles = await glob(config.scan.routes || [], { cwd: root, ignore: defaultIgnore });
   for (const f of routeFiles) {
     try {
       const data = extractRoute(path.join(root, f));
@@ -54,7 +56,7 @@ export async function runScan({ root = process.cwd() } = {}) {
   }
 
   // Scan schemas
-  const schemaFiles = await glob(config.scan.schemas || [], { cwd: root });
+  const schemaFiles = await glob(config.scan.schemas || [], { cwd: root, ignore: defaultIgnore });
   for (const f of schemaFiles) {
     try {
       const results = extractSchema(path.join(root, f));

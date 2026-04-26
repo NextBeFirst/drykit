@@ -60,7 +60,8 @@ export async function runCheck({ root = process.cwd(), ci = false, json = false,
     ...(config.scan.routes || []),
     ...(config.scan.schemas || []),
   ];
-  const files = await glob(allPatterns, { cwd: root });
+  const defaultIgnore = ['**/*.test.*', '**/*.spec.*', '**/__mocks__/**', '**/*.stories.*', '**/node_modules/**'];
+  const files = await glob(allPatterns, { cwd: root, ignore: defaultIgnore });
   const normalizedFiles = files.map(f => f.replace(/\\/g, '/'));
 
   const allEntries = [...reg.components, ...reg.hooks, ...reg.utils];
